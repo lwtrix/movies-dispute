@@ -46,3 +46,20 @@ figure .image img {
   height: 50px;
   margin-right: 10px;
 }
+
+.dropdown-item div.placeholder {
+  width: 26px;
+  height: 50px;
+  margin-right: 10px;
+  display: none;
+}
+
+.dropdown-item div.show {
+  display: block;
+}
+
+.autocomplete {
+  display: flex;
+  width: fit-content;
+  flex-direction: column;
+}
