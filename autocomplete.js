@@ -17,7 +17,7 @@ const createAutoComplete = ({
 
   const results = root.querySelector('#results');
   const dropdown = root.querySelector('.dropdown');
-  const input = root.querySelector('.autocomplete input');
+  const input = root.querySelector('input');
 
   const onInput = async (event) => {
     const items = await fetchOptions(event.target.value);
