@@ -69,23 +69,54 @@ const onMovieSelect = async (movie, summaryElement, side) => {
 };
 
 const runComparison = () => {
-  console.log('running comparison');
+  const leftStatsElements = document.querySelectorAll('#left-summary .stat');
+  const rightStatsElements = document.querySelectorAll('#right-summary .stat');
+
+  leftStatsElements.forEach((leftStat, idx) => {
+    const rightStat = rightStatsElements[idx];
+
+    const leftStatValue = parseFloat(leftStat.dataset.value);
+    const rightStatValue = parseFloat(rightStat.dataset.value);
+    console.log(leftStat, rightStat);
+
+    if (leftStatValue > rightStatValue) {
+      leftStat.classList.add('is-primary');
+      rightStat.classList.remove('is-primary');
+
+      leftStat.classList.remove('is-info');
+      rightStat.classList.remove('is-info');
+    } else {
+      rightStat.classList.add('is-primary');
+      leftStat.classList.remove('is-primary');
+
+      leftStat.classList.remove('is-info');
+      rightStat.classList.remove('is-info');
+    }
+
+    if (leftStatValue === rightStatValue) {
+      leftStat.classList.add('is-info');
+      rightStat.classList.add('is-info');
+
+      leftStat.classList.remove('is-primary');
+      rightStat.classList.remove('is-primary');
+    }
+  });
 };
 
 const movieTemplate = (movieDetails) => {
   const boxOffice = parseInt(
     movieDetails.BoxOffice.replace(/\$/g, '').replace(/,/g, '')
   );
-  const metascore = parseInt(movieDetails.Metascore)
-  const imdbRating = parseFloat(movieDetails.imdbRating)
-  const imdbVotes = parseInt(movieDetails.imdbVotes.replace(/,/g, ''))
+  const metascore = parseInt(movieDetails.Metascore);
+  const imdbRating = parseFloat(movieDetails.imdbRating);
+  const imdbVotes = parseInt(movieDetails.imdbVotes.replace(/,/g, ''));
 
   const awards = movieDetails.Awards.split(' ').reduce((total, item) => {
-    if(!isNaN(parseInt(item))) {
-      return total + parseInt(item)
+    if (!isNaN(parseInt(item))) {
+      return total + parseInt(item);
     }
-    return total
-  }, 0)
+    return total;
+  }, 0);
 
   return `
     <article class="media">
@@ -102,23 +133,23 @@ const movieTemplate = (movieDetails) => {
         </div>
       </div>
     </article>
-    <article data-value=${awards} class="notification">
+    <article data-value=${awards} class="notification stat">
       <p class="title">${movieDetails.Awards}</p>
       <p class="subtitle">Awards</p>
     </article>
-    <article data-value=${boxOffice} class="notification">
+    <article data-value=${boxOffice} class="notification stat">
       <p class="title">${movieDetails.BoxOffice}</p>
       <p class="subtitle">Box Office</p>
     </article>
-    <article data-value=${metascore} class="notification">
+    <article data-value=${metascore} class="notification stat">
       <p class="title">${movieDetails.Metascore}</p>
       <p class="subtitle">Metascore</p>
     </article>
-    <article data-value=${imdbRating} class="notification">
+    <article data-value=${imdbRating} class="notification stat">
       <p class="title">${movieDetails.imdbRating}</p>
       <p class="subtitle">IMDB Rating</p>
     </article>
-    <article data-value=${imdbVotes} class="notification">
+    <article data-value=${imdbVotes} class="notification stat">
       <p class="title">${movieDetails.imdbVotes}</p>
       <p class="subtitle">IMDB Votes</p>
     </article>
