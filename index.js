@@ -1,18 +1,3 @@
-const fetchMovies = async (searchValue) => {
-  const response = await axios.get('https://www.omdbapi.com', {
-    params: {
-      apikey: '37697e59',
-      s: searchValue,
-    },
-  });
-
-  if (response.data.Error) {
-    return [];
-  }
-
-  return response.data.Search;
-};
-
 const fetchMovieData = async (imdbId) => {
   const response = await axios.get('https://www.omdbapi.com', {
     params: {
@@ -24,59 +9,42 @@ const fetchMovieData = async (imdbId) => {
   return response.data;
 };
 
-const autocompleteRoot = document.querySelector('#autocomplete');
-autocompleteRoot.innerHTML = `
-  <label><b>Search for a movie</b></label>
-  <input class="input"/>
-  <div class="dropdown">
-    <div class="dropdown-menu">
-      <div class="dropdown-content" id="results"></div>
-    </div>
-  </div>   
-`;
+const onMovieSelect = async (movie) => {
+  const data = await fetchMovieData(movie.imdbID);
+  document.querySelector('#selected').innerHTML = movieTemplate(data);
+};
 
-const results = document.querySelector('#results');
-const dropdown = document.querySelector('.dropdown');
-const input = document.querySelector('.autocomplete input');
-
-const onInput = async (event) => {
-  const data = await fetchMovies(event.target.value);
-  results.innerHTML = '';
-
-  if (!data.length) {
-    dropdown.classList.remove('is-active');
-    return;
-  }
-
-  for (let movie of data) {
+createAutoComplete({
+  root: document.querySelector('#autocomplete'),
+  renderOption: (movie) => {
     const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
-    const movieItem = document.createElement('a');
-
-    movieItem.classList.add('dropdown-item');
-    movieItem.innerHTML = `
+    return `
       <div class="placeholder ${imgSrc === '' ? 'show' : ''}"></div>
       <img src="${imgSrc}"/>
-      ${movie.Title}
+      <span>${movie.Title} (${movie.Year})</span>
     `;
-
-    movieItem.addEventListener('click', (event) => {
-      onMovieSelect(movie)
+  },
+  onOptionSelect: (movie) => {
+    onMovieSelect(movie);
+  },
+  inputValue: (movie) => {
+    return movie.Title;
+  },
+  fetchOptions: async (searchValue) => {
+    const response = await axios.get('https://www.omdbapi.com', {
+      params: {
+        apikey: '37697e59',
+        s: searchValue,
+      },
     });
 
-    results.appendChild(movieItem);
-  }
-  dropdown.classList.add('is-active');
-};
+    if (response.data.Error) {
+      return [];
+    }
 
-input.addEventListener('input', debounce(onInput));
-
-const onMovieSelect = async (movie) => {
-  input.value = movie.Title;
-  dropdown.classList.remove('is-active');
-  
-  const data = await fetchMovieData(movie.imdbID);
-  document.querySelector('#selected').innerHTML = movieTemplate(data)
-};
+    return response.data.Search;
+  },
+});
 
 const movieTemplate = (movieDetails) => {
   return `
@@ -114,11 +82,5 @@ const movieTemplate = (movieDetails) => {
       <p class="title">${movieDetails.imdbVotes}</p>
       <p class="subtitle">IMDB Votes</p>
     </article>
-  `
-}
-
-document.addEventListener('click', (e) => {
-  if (!autocompleteRoot.contains(e.target)) {
-    dropdown.classList.remove('is-active');
-  }
-});
+  `;
+};
