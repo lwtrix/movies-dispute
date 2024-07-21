@@ -71,36 +71,59 @@ const onMovieSelect = async (movie, summaryElement, side) => {
 const runComparison = () => {
   const leftStatsElements = document.querySelectorAll('#left-summary .stat');
   const rightStatsElements = document.querySelectorAll('#right-summary .stat');
+  let leftStatsCount = 0;
+  let rightStatsCount = 0;
 
   leftStatsElements.forEach((leftStat, idx) => {
     const rightStat = rightStatsElements[idx];
 
     const leftStatValue = parseFloat(leftStat.dataset.value);
     const rightStatValue = parseFloat(rightStat.dataset.value);
-    console.log(leftStat, rightStat);
 
     if (leftStatValue > rightStatValue) {
-      leftStat.classList.add('is-primary');
-      rightStat.classList.remove('is-primary');
+      leftStatsCount++;
 
-      leftStat.classList.remove('is-info');
-      rightStat.classList.remove('is-info');
-    } else {
-      rightStat.classList.add('is-primary');
+      leftStat.classList.add('is-danger');
+      rightStat.classList.remove('is-danger');
+
       leftStat.classList.remove('is-primary');
+      rightStat.classList.remove('is-primary');
+    } else {
+      rightStatsCount++;
 
-      leftStat.classList.remove('is-info');
-      rightStat.classList.remove('is-info');
+      rightStat.classList.add('is-danger');
+      leftStat.classList.remove('is-danger');
+
+      leftStat.classList.remove('is-primary');
+      rightStat.classList.remove('is-primary');
     }
 
     if (leftStatValue === rightStatValue) {
-      leftStat.classList.add('is-info');
-      rightStat.classList.add('is-info');
+      leftStat.classList.add('is-primary');
+      rightStat.classList.add('is-primary');
 
-      leftStat.classList.remove('is-primary');
-      rightStat.classList.remove('is-primary');
+      leftStat.classList.remove('is-danger');
+      rightStat.classList.remove('is-danger');
     }
+
+    renderWinner(leftStatsCount, rightStatsCount);
   });
+};
+
+const renderWinner = (leftStatsCount, rightStatsCount) => {
+  const winnerElement = document.querySelector('.winner');
+  winnerElement.classList.remove('is-hidden')
+  if (leftStatsCount > rightStatsCount) {
+    winnerElement.innerHTML = `
+        <h2 class="title">Winner: <strong>${leftMovie.Title}</strong></h2>
+        <p class="subtitle is-size-3 has-text-weight-bold"><span class="has-text-danger">${leftStatsCount}</span> : ${rightStatsCount}</p>
+    `;
+  } else {
+    winnerElement.innerHTML = `
+        <h2 class="title">Winner: <strong>${rightMovie.Title}</strong></h2>
+        <p class="subtitle is-size-3 has-text-weight-bold">${leftStatsCount} : <span class="has-text-danger">${rightStatsCount}</span></p>
+    `;
+  }
 };
 
 const movieTemplate = (movieDetails) => {

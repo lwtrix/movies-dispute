@@ -1,7 +1,11 @@
-.tutorial {
+.tutorial, .winner {
   width: 600px;
   text-align: center;
   margin: auto;
+}
+
+.winner {
+  margin-bottom: 40px;
 }
 
 figure.image {
